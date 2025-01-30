@@ -27,6 +27,7 @@
             flex-direction: column;
             align-items: center;
             width: 400px;
+            height: auto;
         }
         
         #display {
@@ -54,13 +55,13 @@
             width: 80px;
             height: 50px;
             font-size: 18px;
-            margin: 1px;
-            padding: 1px;
+            margin: 0px;
+            padding: 0px;
             cursor: pointer;
-            background-color: #4c27f0;
+            background-color: #4623e6;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 25%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -72,7 +73,7 @@
         /* Extra styling for specific buttons */
         
         button.function {
-            background-color: #f0ad4e;
+            background-color: #3a64ee;
             /* Orange color for functions like sin, cos, etc. */
         }
         
@@ -82,7 +83,12 @@
         }
         
         .new {
-            background-color: red;
+            background-color: rgb(199, 61, 61);
+        }
+        
+        .xx {
+            background-color: rgb(90, 212, 8);
+            width: 158px;
         }
     </style>
 </head>
@@ -116,46 +122,99 @@
             <button onclick="appendToDisplay('+')">+</button>
         </div>
         <div class="button-container">
-            <button class="function" onclick="appendToDisplay('Math.sin()')">sin</button>
-            <button class="function" onclick="appendToDisplay('Math.cos()')">cos</button>
-            <button class="function" onclick="appendToDisplay('Math.tan(')">tan</button>
-            <button class="function" onclick="appendToDisplay('Math.exp(')">exp</button>
+            <button onclick="appendToDisplay('(')">(</button>
+            <button onclick="appendToDisplay(')')">)</button>
+            <button class="function" onclick="appendToDisplay('x')">x</button>
+            <button class="function" onclick="appendToDisplay('y')">y</button>
 
         </div>
         <div class="button-container">
-            <button onclick="appendToDisplay('(')">(</button>
-            <button onclick="appendToDisplay(')')">)</button>
-            <button class="new" onclick="calculateResult()">=</button>
-            <button class="new" onclick="clearDisplay()">C</button>
+            <button class="function" onclick="appendToDisplay('x^2')">x²</button>
+            <button class="function" onclick="appendToDisplay('y^2')">y²</button>
+            <button class="function" onclick="appendToDisplay('√()')">√</button>
+            <button class="function" onclick="appendToDisplay('π')">π</button>
+        </div>
+        <div class="button-container">
+            <button class="function" onclick="appendToDisplay('sin()')">sin</button>
+            <button class="function" onclick="appendToDisplay('cos()')">cos</button>
+            <button class="function" onclick="appendToDisplay('tan()')">tan</button>
+            <button class="function" onclick="appendToDisplay('exp()')">exp</button>
+        </div>
+        <div class="button-container">
+            <button class="function" onclick="appendToDisplay('e')">e</button>
+            <button class="function" onclick="appendToDisplay('ln()')">ln</button>
+            <button class="function" onclick="appendToDisplay('log10()')">log10</button>
+            <button class="function" onclick="appendToDisplay('log()')">log</button>
+        </div>
+        <div class="button-container">
+            <button class="xx" onclick="calculateResult()">=</button>
+            <button class="new" onclick="clearDisplay()">CLR</button>
+            <button class="new" onclick="deleteLastCharacter()">DEL</button>
         </div>
     </div>
 
     <script>
+        let isNewCalculation = false; // Track if a new calculation is starting
+
         function appendToDisplay(value) {
-            document.getElementById('display').value += value;
+            const display = document.getElementById('display');
+            if (isNewCalculation) {
+                display.value = ''; // Clear the display for a new calculation
+                isNewCalculation = false;
+            }
+            display.value += value;
         }
 
         function calculateResult() {
             const display = document.getElementById('display');
             try {
-                const mathFunctions = ['Math.sin', 'Math.cos', 'Math.tan', 'Math.exp'];
                 let expression = display.value;
 
-                mathFunctions.forEach(func => {
-                    const regex = new RegExp(`(?<!Math\\.)${func}\\(`, 'g');
-                    expression = expression.replace(regex, `${func}(`);
-                });
+                // Replace x² and y² with x*x and y*y
+                expression = expression.replace(/x\^2/g, 'x*x').replace(/y\^2/g, 'y*y');
 
+                // Replace function names with their Math equivalents
+                expression = expression.replace(/sin\(/g, 'Math.sin(')
+                    .replace(/cos\(/g, 'Math.cos(')
+                    .replace(/tan\(/g, 'Math.tan(')
+                    .replace(/exp\(/g, 'Math.exp(')
+                    .replace(/ln\(/g, 'Math.log(')
+                    .replace(/log10\(/g, 'Math.log10(')
+                    .replace(/log\((\d+),(\d+)\)/g, 'Math.log($2) / Math.log($1)')
+                    .replace(/√\(/g, 'Math.sqrt(');
+
+                // Replace π and e with their numeric values
+                expression = expression.replace(/π/g, Math.PI).replace(/e/g, Math.E);
+
+                // Check if the expression contains 'x' or 'y'
+                if (expression.includes('x') || expression.includes('y')) {
+                    // Prompt the user for values of x and y
+                    const x = parseFloat(prompt("Enter the value of x:"));
+                    const y = parseFloat(prompt("Enter the value of y:"));
+
+                    // Replace x and y with their numeric values
+                    expression = expression.replace(/x/g, x).replace(/y/g, y);
+                }
+
+                // Evaluate the expression
                 const result = eval(expression);
                 display.value = result;
+                isNewCalculation = true; // Set flag for a new calculation
 
             } catch (error) {
                 display.value = 'Error';
+                isNewCalculation = true; // Set flag for a new calculation
             }
         }
 
         function clearDisplay() {
             document.getElementById('display').value = '';
+            isNewCalculation = false;
+        }
+
+        function deleteLastCharacter() {
+            const display = document.getElementById('display');
+            display.value = display.value.slice(0, -1); // Remove the last character
         }
     </script>
 
