@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #8ea9e2;
+            margin: 0;
+        }
+        
+        #calculator {
+            border: 1px solid #e9f812;
+            border-radius: 20px;
+            padding: 5px;
+            background-color: #65eca9;
+            background: linear-gradient(145deg, #03f70f, rgb(77, 1, 107));
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 400px;
+        }
+        
+        #display {
+            width: 80%;
+            background-color: #fff;
+            height: 60px;
+            text-align: right;
+            color: #000;
+            font-size: 24px;
+            margin-bottom: 19px;
+            margin-top: 10px;
+            border: 1px solid #030202;
+            padding: 5px;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: baseline;
+            padding: 1px;
+            width: 100%;
+            margin-left: 73px;
+        }
+        
+        button {
+            width: 80px;
+            height: 50px;
+            font-size: 18px;
+            margin: 1px;
+            padding: 1px;
+            cursor: pointer;
+            background-color: #4c27f0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        button:hover {
+            background-color: #6096cf;
+        }
+        /* Extra styling for specific buttons */
+        
+        button.function {
+            background-color: #f0ad4e;
+            /* Orange color for functions like sin, cos, etc. */
+        }
+        
+        button.function:hover {
+            background-color: #e6d6c1;
+            /* Darker orange on hover */
+        }
+        
+        .new {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="calculator">
+        <input type="text" id="display" />
+        <div class="button-container">
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button onclick="appendToDisplay('/')">/</button>
+        </div>
+        <div class="button-container">
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button onclick="appendToDisplay('*')">*</button>
+        </div>
+        <div class="button-container">
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button onclick="appendToDisplay('-')">-</button>
+        </div>
+        <div class="button-container">
+            <button onclick="appendToDisplay('0')">0</button>
+            <button onclick="appendToDisplay('.')">.</button>
+            <button onclick="appendToDisplay('%')">%</button>
+            <button onclick="appendToDisplay('+')">+</button>
+        </div>
+        <div class="button-container">
+            <button class="function" onclick="appendToDisplay('Math.sin()')">sin</button>
+            <button class="function" onclick="appendToDisplay('Math.cos()')">cos</button>
+            <button class="function" onclick="appendToDisplay('Math.tan(')">tan</button>
+            <button class="function" onclick="appendToDisplay('Math.exp(')">exp</button>
+
+        </div>
+        <div class="button-container">
+            <button onclick="appendToDisplay('(')">(</button>
+            <button onclick="appendToDisplay(')')">)</button>
+            <button class="new" onclick="calculateResult()">=</button>
+            <button class="new" onclick="clearDisplay()">C</button>
+        </div>
+    </div>
+
+    <script>
+        function appendToDisplay(value) {
+            document.getElementById('display').value += value;
+        }
+
+        function calculateResult() {
+            const display = document.getElementById('display');
+            try {
+                const mathFunctions = ['Math.sin', 'Math.cos', 'Math.tan', 'Math.exp'];
+                let expression = display.value;
+
+                mathFunctions.forEach(func => {
+                    const regex = new RegExp(`(?<!Math\\.)${func}\\(`, 'g');
+                    expression = expression.replace(regex, `${func}(`);
+                });
+
+                const result = eval(expression);
+                display.value = result;
+
+            } catch (error) {
+                display.value = 'Error';
+            }
+        }
+
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+        }
+    </script>
+
+</body>
+
+</html>
